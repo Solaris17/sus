@@ -28,6 +28,11 @@ func main () {
 		os.Exit(1)
 	}
 
+	if len(list) < 1 {
+		fmt.Println("Could not find any compatible devices. Exiting.")
+		os.Exit(0)
+	}
+
 	for index, device := range list {
 		fmt.Printf("Detected device (%d) identified by (%s)\n",
 			index, device.Identifier())
