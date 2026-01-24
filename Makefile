@@ -1,13 +1,13 @@
 DEPS = sus.go go.mod go.sum
 
 .PHONY:
-all: bin/sus bin/susd
+all: bin/susm bin/susd
 
 .PHONY:
 clean:
 	rm -rf bin
 
-bin/sus: sus/main.go $(DEPS) | bin
+bin/susm: susm/main.go $(DEPS) | bin
 	go get
 	go build -o $@ $<
 
