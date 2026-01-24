@@ -5,16 +5,33 @@ package main
 
 import "os"
 import "fmt"
+import "flag"
 import "time"
 import "github.com/jan-provaznik/sus"
 import "github.com/NVIDIA/go-nvml/pkg/nvml"
 
-const upperDrawLimit = 105.00
-const lowerDrawLimit =  10.00
-const matchDrawLimit =   0.75
+var upperDrawLimit float64 = 150
+var lowerDrawLimit float64 =  10
+var matchDrawLimit float64 =   1
 
 func main () {
 	defer nvml.Shutdown()
+
+	interval := flag.Duration("t", time.Second, "Monitoring interval")
+
+	flag.Float64Var(& upperDrawLimit, "u", 105.0, "Maximal power draw per wire (W).")
+	flag.Float64Var(& matchDrawLimit, "m",  0.75, "Maximal mismatch ratio.")
+	flag.Parse()
+
+	if upperDrawLimit > 150 || upperDrawLimit < 1 {
+		fmt.Println("Invalid upperDrawLimit. Restrict to 1 <= value < 150.")
+		os.Exit(1)
+	}
+
+	if matchDrawLimit > 1 || matchDrawLimit < 0 {
+		fmt.Println("Invalid matchDrawLimit. Restrict to 0 <= value < 1.")
+		os.Exit(1)
+	}
 
 	ret := nvml.Init()
 	if ret != nvml.SUCCESS {
@@ -47,7 +64,7 @@ func main () {
 				os.Exit(1)
 			}
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(* interval)
 	}
 }
 
