@@ -1,0 +1,10 @@
+[Service]
+ExecStart = /usr/local/bin/susd
+Type = simple
+
+Restart = on-failure
+RestartSec = 1s
+
+[Install]
+WantedBy = multi-user.target
+
