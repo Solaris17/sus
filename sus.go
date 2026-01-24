@@ -153,12 +153,21 @@ func ReadAstralDeviceLoad (target AstralDevice) (float64, error) {
 // Emergency actions
 //
 
-func LimitAstralDeviceFreq (target AstralDevice) error {
-	ret := nvml.DeviceSetGpuLockedClocks(target.deviceHandle, 0, 100)
+func LimitAstralDeviceFreq (target AstralDevice) (uint32, error) {
+	current, ret := nvml.DeviceGetClockInfo(target.deviceHandle, nvml.CLOCK_GRAPHICS)
 	if ret != nvml.SUCCESS {
-		return fmt.Errorf("nvmlDeviceSetGpuLockedClocks failed")
+		return 0, fmt.Errorf("nvmlDeviceGetClockInfo failed")
 	}
-	return nil
+
+	value :=  int32(current)
+	limit := uint32(clamp(value - 500, 100, value))
+
+	ret = nvml.DeviceSetGpuLockedClocks(target.deviceHandle, 0, limit)
+	if ret != nvml.SUCCESS {
+		return 0, fmt.Errorf("nvmlDeviceSetGpuLockedClocks failed")
+	}
+
+	return limit, nil
 }
 
 func LimitAstralDeviceLoad (target AstralDevice) (float64, error) {
@@ -179,7 +188,7 @@ func LimitAstralDeviceLoad (target AstralDevice) (float64, error) {
 		return watts, fmt.Errorf("nvmlDeviceGetPowerManagementLimit failed")
 	}
 	
-	// power limit can be only set within the (lower, upper) range
+	// ... power limit can be only set within the (lower, upper) range
 	limit := clamp(limitCurrent - 5000, limitLower, limitUpper)
 
 	ret = nvml.DeviceSetPowerManagementLimit(target.deviceHandle, limit)
@@ -242,10 +251,10 @@ func findAstralDeviceSensorNumber (info nvml.PciInfo) (int, error) {
 
 func clamp[V cmp.Ordered] (value V, lower V, upper V) V {
 	if value > upper {
-		return value
+		return upper
 	}
 	if value < lower {
-		return value
+		return lower
 	}
 	return value
 }

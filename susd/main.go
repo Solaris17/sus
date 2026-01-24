@@ -79,12 +79,13 @@ func deviceMonitor (index int, device sus.AstralDevice) error {
 		fmt.Printf("... detected overload %.1f (limit %.1f)\n",
 			upperDraw, upperDrawLimit)
 
-		watts, err := sus.LimitAstralDeviceLoad(device)
+		limit, err := sus.LimitAstralDeviceLoad(device)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("... limiting power draw to %.1f W\n", watts)
+		fmt.Printf("... limiting power draw to %.1f W\n", 
+			limit)
 	}
 
 	// ... emergency actions (pin mismatch min-max draw)
@@ -94,12 +95,14 @@ func deviceMonitor (index int, device sus.AstralDevice) error {
 				index, device.Identifier())
 			fmt.Printf("... detected mismatch %.2f (limit %.2f)\n",
 				matchDraw, matchDrawLimit)
-			fmt.Printf("... attempting to limit device frequency\n")
 
-			err := sus.LimitAstralDeviceFreq(device)
+			limit, err := sus.LimitAstralDeviceFreq(device)
 			if err != nil {
 				return err
 			}
+
+			fmt.Printf("... attempting to limit device frequency to %d MHz\n", 
+				limit)
 		}
 	}
 
