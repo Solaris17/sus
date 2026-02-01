@@ -1,7 +1,7 @@
 # Introduction
 
-  • The 12V-2x6 (12VHPWR) connectors are notorious for their flammability.
-  • The ASUS ROG Astral and Matrix implementation of the RTX 5090 monitors voltage and current flowing through connector pins.
+  - The 12V-2x6 (12VHPWR) connectors are notorious for their flammability.
+  - The ASUS ROG Astral and Matrix implementation of the RTX 5090 monitors voltage and current flowing through connector pins.
 
   This project provides a native Linux implementation of the current monitoring
   functionality of ASUS ROG Astral/Matrix devices.
